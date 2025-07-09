@@ -1,0 +1,47 @@
+[package]
+name = "thermostat"
+version = "0.1.0"
+edition = "2024"
+authors = ["Michele Valsesia <luni-4@hotmail.it>"]
+description = "A thermostat running on an ESP32-C3 microcontroller."
+license = "MIT"
+resolver = "2"
+publish = false
+
+[dependencies]
+ascot.version = "0.1.0"
+ascot.git = "https://github.com/SoftengPoliTo/ascot"
+
+ascot-esp32c3.version = "0.1.0"
+ascot-esp32c3.git = "https://github.com/SoftengPoliTo/ascot"
+
+esp-idf-svc = "0.50.1"
+
+toml-cfg.version = "0.2.0"
+toml-cfg.default-features = false
+
+[build-dependencies]
+embuild.version  = "0.33.0"
+embuild.default-features = false
+
+toml-cfg.version = "0.2.0"
+toml-cfg.default-features = false
+
+[profile.dev]
+# Enable debug symbols
+debug = true
+# Optimize memory
+opt-level = 'z'
+# Use lto
+lto = 'fat'
+
+[profile.release]
+codegen-units = 1 # LLVM can perform better optimizations using a single thread
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+# Optimize for binary size, but with loop vectorization.
+opt-level = 's'
+overflow-checks = false
+strip = true

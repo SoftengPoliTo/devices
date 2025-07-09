@@ -1,0 +1,46 @@
+name: esp
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
+
+jobs:
+  rustfmt-clippy-build:
+
+    strategy:
+      matrix:
+        device: [light, thermostat, camera]
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.device }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt, clippy
+
+      - name: Install ldproxy
+        run: |
+          cargo install ldproxy
+
+      - name: Create cfg.toml
+        run: mv cfg.toml.example cfg.toml
+
+      - name: Run rustfmt
+        run: cargo fmt --all -- --check --verbose
+
+      - name: Run cargo clippy
+        run: cargo clippy --all-targets -- -Dclippy::all -Dclippy::pedantic
+
+      - name: Build ${{ matrix.device }}
+        run: cargo build --verbose
